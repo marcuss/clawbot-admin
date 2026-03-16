@@ -1,0 +1,41 @@
+# SECURITY: Never commit secrets or credentials
+*.secret
+*.key
+*.token
+*_token
+*_secret
+
+# Runtime files
+/tmp/
+*.sock
+*.pid
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Task files (generated at runtime, may contain sensitive commands)
+tasks/*.sh
+
+# Logs (stay local)
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

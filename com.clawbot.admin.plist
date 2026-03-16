@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.clawbot.admin</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/python3</string>
+    <string>/Users/marcuss/nextasy/projects/clawbot-admin/approval_service.py</string>
+  </array>
+
+  <!-- Auto-start when user logs in -->
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- Restart if it crashes -->
+  <key>KeepAlive</key>
+  <true/>
+
+  <!-- Throttle restarts (30s between crash restarts) -->
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+  <!-- Logging -->
+  <key>StandardOutPath</key>
+  <string>/Users/marcuss/.clawbot-admin/approval_service.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/marcuss/.clawbot-admin/approval_service.error.log</string>
+
+  <!-- Working directory -->
+  <key>WorkingDirectory</key>
+  <string>/Users/marcuss/nextasy/projects/clawbot-admin</string>
+
+  <!-- Environment variables -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+    <key>HOME</key>
+    <string>/Users/marcuss</string>
+    <key>PYTHONUNBUFFERED</key>
+    <string>1</string>
+  </dict>
+</dict>
+</plist>

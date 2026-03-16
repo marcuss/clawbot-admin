@@ -1,0 +1,36 @@
+services:
+  clawbot-admin:
+    build: ./admin-container/
+    secrets:
+      - infisical_token
+      - aws_admin_key
+      - aws_admin_secret
+    environment:
+      - TASK_ID=${TASK_ID}
+    volumes:
+      - ./tasks:/tasks:ro
+    networks:
+      - admin-net
+    # Security hardening
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    # No persistent state — container is ephemeral per task
+    restart: "no"
+
+networks:
+  admin-net:
+    driver: bridge
+    # Isolated network — no internet access by default
+    # Uncomment below to allow internet if tasks need it:
+    # internal: true
+
+secrets:
+  infisical_token:
+    file: ${HOME}/.clawbot-admin/infisical_admin_token
+  aws_admin_key:
+    file: ${HOME}/.clawbot-admin/aws_admin_key
+  aws_admin_secret:
+    file: ${HOME}/.clawbot-admin/aws_admin_secret
