@@ -8,7 +8,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/local/bin/python3</string>
+    <string>/Users/marcuss/nextasy/projects/clawbot-admin/.venv/bin/python3</string>
     <string>/Users/marcuss/nextasy/projects/clawbot-admin/approval_service.py</string>
   </array>
 

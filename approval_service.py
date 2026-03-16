@@ -53,8 +53,8 @@ def load_totp() -> pyotp.TOTP:
 
 
 def validate_totp(totp: pyotp.TOTP, code: str) -> bool:
-    """Validate code with a ±1 window to handle clock skew."""
-    return totp.verify(code, valid_window=1)
+    """Validate code with a ±2 window (±60s) to handle clock skew and response delays."""
+    return totp.verify(code, valid_window=2)
 
 
 # ─── WhatsApp notification ─────────────────────────────────────────────────────
@@ -71,9 +71,9 @@ def notify_marcus(request_id: str, description: str, command: str) -> None:
     subprocess.run(
         [
             "openclaw", "message", "send",
-            "--channel", "whatsapp",
-            "--to", MARCUS_WHATSAPP,
+            "--target", MARCUS_WHATSAPP,
             "--message", msg,
+            "--json",
         ],
         check=True,
     )
@@ -306,16 +306,7 @@ def handle_request(conn: socket.socket, totp: pyotp.TOTP) -> None:
         task_id = f"task-{request_id}"
         output, exit_code, duration = execute_in_container(task_id, command)
 
-        # 6. Return result
-        result_payload = json.dumps({
-            "request_id": request_id,
-            "exit_code": exit_code,
-            "duration_seconds": round(duration, 2),
-            "output": output,
-        })
-        conn.sendall(result_payload.encode() + b"\n")
-
-        # 7. Log
+        # 6. Log FIRST — before sending to client (so audit is never lost)
         log_event(
             request_id=request_id,
             task_description=description,
@@ -332,6 +323,18 @@ def handle_request(conn: socket.socket, totp: pyotp.TOTP) -> None:
             f"[{request_id}] Done. exit_code={exit_code}, "
             f"duration={duration:.1f}s"
         )
+
+        # 7. Return result to client (best-effort — pipe may already be closed)
+        result_payload = json.dumps({
+            "request_id": request_id,
+            "exit_code": exit_code,
+            "duration_seconds": round(duration, 2),
+            "output": output,
+        })
+        try:
+            conn.sendall(result_payload.encode() + b"\n")
+        except BrokenPipeError:
+            log.warning(f"[{request_id}] Client disconnected before result was sent (audit log already written)")
 
     except json.JSONDecodeError:
         conn.sendall(b'{"error": "Invalid JSON request"}\n')
